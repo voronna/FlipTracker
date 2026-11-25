@@ -1,0 +1,127 @@
+@model Web_Development_Coursework.Controllers.CatalogDetailsViewModel
+@using System.Text.Json
+
+@{
+    var item = Model.Item;
+    var market = Model.Market;
+    var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+
+    ViewData["Title"] = item.Name;
+    ViewData["Description"] =
+        item.Name
+        + (string.IsNullOrEmpty(item.Faction) ? "" : $" ({item.Faction})")
+        + $": retail price {item.RrpPrice:0.00} EUR"
+        + (market != null ? $", market median {market.MedianPrice:0.00} EUR." : ".");
+
+    var breadcrumbJson = JsonSerializer.Serialize(new Dictionary<string, object>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "BreadcrumbList",
+        ["itemListElement"] = new object[]
+        {
+            new Dictionary<string, object> { ["@type"] = "ListItem", ["position"] = 1, ["name"] = "Home", ["item"] = baseUrl + "/" },
+            new Dictionary<string, object> { ["@type"] = "ListItem", ["position"] = 2, ["name"] = "Models", ["item"] = baseUrl + "/models" },
+            new Dictionary<string, object> { ["@type"] = "ListItem", ["position"] = 3, ["name"] = item.Name }
+        }
+    });
+}
+
+@section Head {
+    <script type="application/ld+json">@Html.Raw(breadcrumbJson)</script>
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Catalog" asp-action="Index">Models</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@item.Name</li>
+    </ol>
+</nav>
+
+<h1>@item.Name</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Faction</dt>
+    <dd class="col-sm-9">@(item.Faction ?? "-")</dd>
+
+    <dt class="col-sm-3">Retail price (RRP)</dt>
+    <dd class="col-sm-9">@item.RrpPrice.ToString("0.00") EUR</dd>
+</dl>
+
+<h2 class="h4">Market data</h2>
+
+@if (market != null)
+{
+    <p>
+        Median of @market.SampleSize listings on @market.Source:
+        <strong>@market.MedianPrice.ToString("0.00") EUR</strong>
+        (updated @market.FetchedAt.ToString("yyyy-MM-dd")).
+        @if (market.CheapestUrl != null)
+        {
+            @if (market.Offers.Any())
+            {
+                <h3 class="h5 mt-3">Cheapest used listings</h3>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Listing</th>
+                                <th>Price, EUR</th>
+                                <th>Shipping, EUR</th>
+                                <th>Total, EUR</th>
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <th><span class="visually-hidden">Action</span></th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var offer in market.Offers.OrderBy(o => o.Price + o.Shipping).Take(10))
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@offer.Url" target="_blank" rel="noopener noreferrer">@offer.Title</a>
+                                    </td>
+                                    <td>@offer.Price.ToString("0.00")</td>
+                                    <td>@offer.Shipping.ToString("0.00")</td>
+                                    <td><strong>@offer.Total.ToString("0.00")</strong></td>
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <td class="text-nowrap">
+                                            <a class="btn btn-sm btn-outline-success"
+                                               asp-controller="Listings" asp-action="Create" asp-route-offerId="@offer.Id"
+                                               aria-label="Add &quot;@offer.Title&quot; to my listings">Add to my listings</a>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            <p class="text-muted small">
+                Shipping is shown when eBay lists it, otherwise as 0.00. Results come from a text search and may include other items.
+            </p>
+        }
+		}
+   
+    </p>
+}
+else
+{
+    <p class="text-muted">Market data is not available yet.</p>
+}
+
+@if (TempData["MarketMessage"] is string marketMessage)
+{
+    <div class="alert alert-info" role="status">@marketMessage</div>
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <form asp-controller="Market" asp-action="Refresh" method="post" class="mb-3">
+        <input type="hidden" name="modelId" value="@item.Id" />
+        <button type="submit" class="btn btn-outline-primary">Refresh market price from eBay</button>
+    </form>
+}
+
+<p><a asp-controller="Catalog" asp-action="Index">Back to catalog</a></p>

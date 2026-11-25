@@ -1,0 +1,37 @@
+@model IEnumerable<Web_Development_Coursework.Controllers.CatalogListItem>
+
+@{
+    ViewData["Title"] = "Miniature models catalog";
+    ViewData["Description"] = "Retail prices and used-market prices of the miniature models we track.";
+}
+
+<h1>Miniature models catalog</h1>
+<p class="lead">Retail prices for the models we track. Open a model to see its market data.</p>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+    @foreach (var entry in Model)
+    {
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5 card-title">
+                        <a asp-controller="Catalog" asp-action="Details" asp-route-slug="@entry.Item.Slug">@entry.Item.Name</a>
+                    </h2>
+                    <p class="card-subtitle text-muted mb-2">@entry.Item.Faction</p>
+                    <p class="card-text mb-1">RRP: @entry.Item.RrpPrice.ToString("0.00") EUR</p>
+                    @if (entry.Market != null)
+                    {
+                        <p class="card-text mb-0">
+                            Market median: <strong>@entry.Market.MedianPrice.ToString("0.00") EUR</strong>
+                            <small class="text-muted d-block">@entry.Market.SampleSize used listings on @entry.Market.Source, @entry.Market.FetchedAt.ToString("yyyy-MM-dd")</small>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="card-text text-muted mb-0">Market median: not available yet</p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
