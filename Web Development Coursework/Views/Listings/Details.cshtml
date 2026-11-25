@@ -1,0 +1,66 @@
+@model Web_Development_Coursework.Models.Listing
+
+@{
+    ViewData["Title"] = "Listing details";
+}
+
+<h1>Listing details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Model</dt>
+        <dd class="col-sm-10">@Model.Model?.Name</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Title)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Title)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Price)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Price)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Shipping)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Shipping)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Material)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Material)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.IsComplete)</dt>
+        <dd class="col-sm-10">@(Model.IsComplete ? "Yes" : "No")</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.IsPainted)</dt>
+        <dd class="col-sm-10">@(Model.IsComplete ? "Yes" : "No")</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.IsBitsOnly)</dt>
+        <dd class="col-sm-10">@(Model.IsComplete ? "Yes" : "No")</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.PostedAt)</dt>
+        <dd class="col-sm-10">@Model.PostedAt.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.SourceUrl)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.SourceUrl)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.DealScore)</dt>
+        <dd class="col-sm-10">@(Model.DealScore?.ToString() ?? "not scored yet")</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Verdict)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Verdict)</dd>
+
+        <dt class="col-sm-2">Why this verdict</dt>
+        <dd class="col-sm-10">@Model.ScoreNote</dd>
+    </dl>
+</div>
+<div class="d-flex flex-wrap gap-2 align-items-center">
+    @if (Model.Deal == null)
+    {
+        <form asp-controller="Deals" asp-action="Start" method="post" class="d-inline">
+            <input type="hidden" name="listingId" value="@Model.Id" />
+            <button type="submit" class="btn btn-success">Track as deal</button>
+        </form>
+    }
+    else
+    {
+        <a class="btn btn-outline-success" asp-controller="Deals" asp-action="Edit" asp-route-id="@Model.Deal.Id">Open deal</a>
+    }
+    <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a class="btn btn-link" asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,80 @@
+@model IEnumerable<Web_Development_Coursework.Models.Listing>
+@using Web_Development_Coursework.Models
+
+@{
+    ViewData["Title"] = "My listings";
+}
+
+@functions {
+    string BadgeClass(Verdict v) => v switch
+    {
+        Verdict.Buy => "bg-success",
+        Verdict.Think => "bg-warning text-dark",
+        Verdict.Skip => "bg-secondary",
+        _ => "bg-light text-dark border"
+    };
+}
+
+<h1>My listings</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add listing</a>
+</p>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>@Html.DisplayNameFor(model => model.Title)</th>
+                <th>@Html.DisplayNameFor(model => model.Price)</th>
+                <th>@Html.DisplayNameFor(model => model.Shipping)</th>
+                <th>@Html.DisplayNameFor(model => model.Material)</th>
+                <th>@Html.DisplayNameFor(model => model.IsComplete)</th>
+                <th>@Html.DisplayNameFor(model => model.IsPainted)</th>
+                <th>@Html.DisplayNameFor(model => model.PostedAt)</th>
+                <th>@Html.DisplayNameFor(model => model.DealScore)</th>
+                <th>@Html.DisplayNameFor(model => model.Verdict)</th>
+                <th><span class="visually-hidden">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Model?.Name</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">@item.Title</a>
+                        @if (!string.IsNullOrEmpty(item.SourceUrl))
+                        {
+                            <a href="@item.SourceUrl" target="_blank" rel="noopener noreferrer" class="small">(source)</a>
+                        }
+                    </td>
+                    <td>@Html.DisplayFor(model => item.Price)</td>
+                    <td>@Html.DisplayFor(model => item.Shipping)</td>
+                    <td>@Html.DisplayFor(model => item.Material)</td>
+                    <td>@(item.IsComplete ? "Yes" : "No")</td>
+                    <td>@(item.IsPainted ? "Yes" : "No")</td>
+                    <td>@item.PostedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@(item.DealScore?.ToString() ?? "-")</td>
+                    <td><span class="badge @BadgeClass(item.Verdict)" title="@item.ScoreNote">@item.Verdict</span></td>
+                    <td class="text-nowrap">
+                        @if (item.Deal == null)
+                        {
+                            <form asp-controller="Deals" asp-action="Start" method="post" class="d-inline">
+                                <input type="hidden" name="listingId" value="@item.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-success">Track as deal</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-sm btn-outline-success" asp-controller="Deals" asp-action="Edit" asp-route-id="@item.Deal.Id">Open deal</a>
+                        }
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

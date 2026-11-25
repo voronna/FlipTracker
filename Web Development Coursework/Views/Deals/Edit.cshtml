@@ -1,0 +1,60 @@
+@model Web_Development_Coursework.Models.Deal
+@using Web_Development_Coursework.Models
+
+@{
+    ViewData["Title"] = "Edit deal";
+    // "Found" не выбираем вручную: это объявление, у которого ещё нет сделки
+    var statusItems = Html.GetEnumSelectList<DealStatus>().Where(i => i.Value != "0").ToList();
+}
+
+<h1>Edit deal</h1>
+<p class="text-muted">@Model.Listing?.Model?.Name &ndash; @Model.Listing?.Title</p>
+
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-select" asp-items="statusItems"></select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="BuyPrice" class="control-label">Buy price (price + shipping)</label>
+                <input asp-for="BuyPrice" class="form-control" />
+                <span asp-validation-for="BuyPrice" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ExtraCosts" class="control-label">Extra costs (paint, resin, printing)</label>
+                <input asp-for="ExtraCosts" class="form-control" />
+                <span asp-validation-for="ExtraCosts" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="SellPrice" class="control-label">Sell price</label>
+                <input asp-for="SellPrice" class="form-control" />
+                <div class="form-text">Required when the status is Sold.</div>
+                <span asp-validation-for="SellPrice" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="SoldAt" class="control-label">Sold on</label>
+                <input asp-for="SoldAt" type="date" class="form-control" />
+                <span asp-validation-for="SoldAt" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-link">Back to deals</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

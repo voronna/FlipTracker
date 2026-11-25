@@ -1,0 +1,60 @@
+﻿@model Web_Development_Coursework.Models.Rule
+
+@{
+    ViewData["Title"] = "My rules";
+}
+
+<h1>My rules</h1>
+<p class="text-muted">
+    Deal Score uses these settings to decide whether a listing is worth buying.
+    Saving recalculates all your listings.
+</p>
+
+@if (TempData["Saved"] != null)
+{
+    <div class="alert alert-success" role="status">Rules saved. Your listings were rescored.</div>
+}
+
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Index">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="MinDiscountPct" class="control-label">Minimum discount, %</label>
+                <input asp-for="MinDiscountPct" class="form-control" />
+                <div class="form-text">Listings with a smaller discount are skipped.</div>
+                <span asp-validation-for="MinDiscountPct" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="AllowMetal" class="form-check-input" />
+                <label asp-for="AllowMetal" class="form-check-label">Allow metal models</label>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="BlockedModels" class="control-label">Blocked models</label>
+                <input asp-for="BlockedModels" class="form-control" />
+                <div class="form-text">Names separated by commas, for example: Termagant, Gaunt.</div>
+                <span asp-validation-for="BlockedModels" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="MaxListingAgeDays" class="control-label">Stale after, days</label>
+                <input asp-for="MaxListingAgeDays" class="form-control" />
+                <div class="form-text">Listings older than this get a penalty: nobody wants them.</div>
+                <span asp-validation-for="MaxListingAgeDays" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save rules" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
