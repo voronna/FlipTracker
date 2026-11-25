@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Track and score secondhand miniature deals";
+    ViewData["Description"] = "FlipTracker scores secondhand miniature listings against your own buying rules, so you only chase deals that are worth reselling.";
+}
+
+<section class="py-4 text-center">
+    <h1 class="display-5 fw-bold">Find secondhand miniature deals worth reselling</h1>
+    <p class="lead col-lg-8 mx-auto">
+        Add the listings you find, set your own buying rules and get a clear verdict
+        with a reason for every deal.
+    </p>
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a class="btn btn-primary btn-lg" asp-controller="Listings" asp-action="Index">Open my listings</a>
+        }
+        else
+        {
+            <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">Create account</a>
+            <a class="btn btn-outline-secondary btn-lg" asp-area="Identity" asp-page="/Account/Login">Log in</a>
+        }
+        <a class="btn btn-outline-secondary btn-lg" asp-controller="Catalog" asp-action="Index">Browse models</a>
+    </div>
+</section>
+
+<section aria-labelledby="how-it-works" class="py-3">
+    <h2 id="how-it-works" class="h3 text-center mb-3">How it works</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h5 card-title">Add listings you find</h3>
+                    <p class="card-text">
+                        Save a listing with its price, shipping, material and condition,
+                        and keep the link to the original ad.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h5 card-title">Set your own rules</h3>
+                    <p class="card-text">
+                        Choose the minimum discount, skip metal models or models nobody buys,
+                        and mark old listings as stale.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h5 card-title">Get a verdict with a reason</h3>
+                    <p class="card-text">
+                        Every listing gets a score from 0 to 100 and a Buy, Think or Skip verdict,
+                        with the reason behind it.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
